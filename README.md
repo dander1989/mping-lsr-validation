@@ -17,6 +17,7 @@ LSRs are the gold standard for surface weather verification, but they carry an i
 The core analysis performs a spatiotemporal join between LSR points and mPING reports, matching pairs within a 10km radius and a +/- 30 minute time window. From matched pairs the pipeline calculates temporal offset (how much earlier or later mPING arrived relative to the official report) and distance decay between the crowdsourced report location and the official damage point.
 
 ### Repository Structure
+```
 ├── data/
 │   ├── raw/          # not committed, see license note above
 │   └── processed/    # derived outputs and summary tables
@@ -29,6 +30,7 @@ The core analysis performs a spatiotemporal join between LSR points and mPING re
 │   └── maps/
 ├── requirements.txt
 └── README.md
+```
 
 ### Status
 In progress. Data acquisition phase. API access pending.
