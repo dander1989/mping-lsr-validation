@@ -207,7 +207,7 @@ marimo/_lsp/
 __marimo__/
 
 # GIS
-data/raw/
+data/raw/lsr_202603130000_202603160000.csv
 Thumbs.db
 desktop.ini
 notes.txt
