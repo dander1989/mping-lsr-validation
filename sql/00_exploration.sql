@@ -10,7 +10,7 @@ GROUP BY
     typecode
 ORDER BY COUNT(*) DESC;
 
--- Full Typecode and Typetext LISTEN
+-- Full Typecode and Typetext
 SELECT TYPECODE, TYPETEXT, COUNT(*)
 FROM lsr_analysis.staging_lsr
 GROUP BY
