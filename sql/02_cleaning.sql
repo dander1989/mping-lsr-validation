@@ -71,3 +71,23 @@ FROM lsr_analysis.staging_lsr
     -- Remove gid 617 and 794, which were 2 problematic records not adhering to the schema.
 WHERE
     gid NOT IN (617, 794);
+
+-- 1. Add a dedicated column for the projected coordinate system (EPSG:5070)
+-- We keep the original wkb_geometry (4269) as a backup and for reference.
+ALTER TABLE reference.counties
+ADD COLUMN IF NOT EXISTS geom_5070 geometry (MultiPolygon, 5070);
+
+-- 2. Transform the data from 4269 (NAD83) to 5070 (CONUS Albers)
+-- This is a one-time cost that makes every future query 100x faster.
+UPDATE reference.counties
+SET
+    geom_5070 = ST_Transform (wkb_geometry, 5070)
+WHERE
+    geom_5070 IS NULL;
+
+-- 3. Create the Spatial Index (The "Secret Sauce" for speed)
+CREATE INDEX IF NOT EXISTS idx_counties_geom_5070 ON reference.counties USING GIST (geom_5070);
+
+-- 4. Clean up the database statistics
+-- This tells the Query Planner exactly how the data is distributed.
+ANALYZE reference.counties;

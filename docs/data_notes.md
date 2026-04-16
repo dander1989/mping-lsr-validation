@@ -2,9 +2,14 @@ PostgreSQL version 18.3
 
 PostGIS version 3.6
 
-ogr2ogr import into postgres
+ogr2ogr import into postgres (lsr csv)
 ```
 ogr2ogr -append -update -f PostgreSQL PG:"host=localhost port=25432 user=**** password=***** dbname=storm_analysis" "C:\Users\DJ\Documents\projects\mping-lsr-validation\data\raw\lsr_202603130000_202603160000.csv" -nln lsr_analysis.staging_lsr -lco GEOMETRY_NAME=GEOM -oo X_POSSIBLE_NAMES=LON -oo Y_POSSIBLE_NAMES=LAT -a_srs EPSG:4326
+```
+
+ogr2ogr import into postgres (census shapefile)
+```
+ogr2ogr -f "PostgreSQL" PG:"dbname=storm_analysis host=localhost port=25432 user=docker password=docker" "C:\Users\DJ\Documents\gis\data\census\tl_2025_us_county\tl_2025_us_county.shp" -nln reference.counties -lco SCHEMA=reference -nlt PROMOTE_TO_MULTI -overwrite
 ```
 
 ## MAG Zero Values
@@ -30,3 +35,9 @@ Corrected to 'Q' in cleaning step.
 - Rename columns to clean lowercase names
 - Build a properly typed geometry column
 - Reproject to a suitable projected coordinate system for distance-based analysis
+- Moved the ST_Transform of reference.counties into the cleaning phase. By storing geom_5070 as a persistent column, we eliminated the need for on-the-fly transformations during analysis, reducing query times from ~20 minutes to under 15 seconds.
+
+## FOR 03_spatial_analysis
+- Identified bottleneck where ST_Transform inside JOIN caused a hang-up. Resolved by pre-calculating geom_5070 on reference.counties table and indexing.
+- Chose ST_Intersects over ST_Within for better handling of points on boundaries.
+- Implemented ST_ConvexHull to limit processing to storm's footprint rather than entire CONUS.
