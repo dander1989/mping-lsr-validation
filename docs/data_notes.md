@@ -41,3 +41,5 @@ Corrected to 'Q' in cleaning step.
 - Identified bottleneck where ST_Transform inside JOIN caused a hang-up. Resolved by pre-calculating geom_5070 on reference.counties table and indexing.
 - Chose ST_Intersects over ST_Within for better handling of points on boundaries.
 - Implemented ST_ConvexHull to limit processing to storm's footprint rather than entire CONUS.
+- Implemented date_trunc on event_time column to aggregate reports by date.
+- Implemented COALESCE for magnitude to ensure null values in the numeric field default to 0 and do not break the severity summation.
